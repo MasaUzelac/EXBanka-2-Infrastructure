@@ -108,6 +108,7 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: ${POSTGRES_DB}
       RABBITMQ_URL: ${RABBITMQ_URL}
+      BANK_SERVICE_ADDR: "http://bank-service:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -115,6 +116,8 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      bank-service:
+        condition: service_started
     networks:
       - bank-net
   bank-service:
@@ -149,10 +152,7 @@ services:
       FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
       ALPHAVANTAGE_API_KEY: ${ALPHAVANTAGE_API_KEY:-}
       LISTING_REFRESH_INTERVAL_MINUTES: ${LISTING_REFRESH_INTERVAL_MINUTES:-15}
-      # true = bez sintetičkih/mock cena za sve tipove hartija; pri padu API-ja ostaje poslednja cena u bazi
-      LISTING_REQUIRE_LIVE_QUOTES: ${LISTING_REQUIRE_LIVE_QUOTES:-true}
-      # Opciono: core_banking.racun.id tekućeg RSD računa „države” za knjiženje prijema poreza
-      STATE_REVENUE_ACCOUNT_ID: ${STATE_REVENUE_ACCOUNT_ID:-0}
+      LISTING_REQUIRE_LIVE_QUOTES: ${LISTING_REQUIRE_LIVE_QUOTES:-false}
     depends_on:
       user-service:
         condition: service_started
